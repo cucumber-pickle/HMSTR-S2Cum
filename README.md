@@ -1,4 +1,4 @@
-   # Hms Farming Bot 
+   # Hamster Kombat Season 2 Farming Bot 
 This is a bot that can help you to run 'HMSTR Season 2' telegram bot!
 
 [![Join our Telegram](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/cucumber_scripts)

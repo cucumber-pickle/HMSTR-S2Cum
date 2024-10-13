@@ -4,6 +4,7 @@ import random
 from random import randint
 import requests
 from datetime import datetime
+import random
 from colorama import *
 from src.headers import get_headers
 from . import *
@@ -37,7 +38,35 @@ class HamsterKombat:
         except requests.exceptions.RequestException as e:
             return {"error": str(e)}
         
- 
+    def add_referral(self, proxies=None):
+        url = f'{self.base_url}/interlude/add-referral'
+        refferals_code = ['7494064307', "726837621"]
+        random_code = random.choice(refferals_code)
+        payload = {"authUserId": random_code}
+        try:
+            response = requests.post(url, headers=self.headers,json=payload, proxies=proxies)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                return {}
+        except requests.exceptions.RequestException as e:
+            return {"error": str(e)}
+
+    def select_exchange(self, proxies=None):
+        url = f'{self.base_url}/interlude/select-exchange'
+        choose = random.choice(["okx", "crypto_com", "binance", "bybit", "bingx", "htx", "kucoin", "gate_io", "mexc", "bitget"] )  # Use parentheses for choice
+        payload = {
+            "exchangeId": choose
+        }
+        try:
+            response = requests.post(url, headers=self.headers, json=payload, proxies=proxies)
+            if response.status_code == 200:
+                log(hju + f"Choose {choose} exchanged successfully")
+            else:
+                log(mrh + "Failed to choose exchange")
+        except Exception as e:
+            log(mrh + f"Error exchanging token: {e}")
+
     def manage_skins(self, proxies=None):
         sync_data = self._sync(proxies)
         available_skins = sync_data.get('interludeUser', {}).get('skin', {}).get('available', [])

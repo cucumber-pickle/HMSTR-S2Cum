@@ -123,12 +123,24 @@ def run_bot(auto_upgrade, tasks_on, promo_on, _method):
                                     balance_coins = user_info.get('totalDiamonds', 0)
                                     earn_passive_per_hour = user_info.get('earnPassivePerSec', 0)
                                     exchange_name = user_info.get('exchangeId', 'Unknown')
+                                    referrerId = user_info.get('exchangeId', 'Unknown')
 
                                     log(hju + f"Diamond: {pth}{number(balance_coins)}")
                                     log(hju + f"Income: {pth}{earn_passive_per_hour} /h")
                                     log(hju + f"CEO of {pth}{exchange_name} {hju}exchange")
                                     log(hju + f"Success syncing balance while idle")
                                     ham.manage_skins(proxies=proxy_dict)
+
+                                if not exchange_name:
+                                    ham.select_exchange(proxies=proxy_dict)
+
+                                if not referrerId:
+                                    reff = ham.add_referral(proxies=proxy_dict)
+                                    if "referrerName" in reff:
+                                        log(hju + f"Success adding! ")
+                                    else:
+                                        log(hju + f"Unsuccess adding! ")
+                                        countdown_timer(1)
 
                                 if tasks_on:
                                     ham.execute(token, cek_task_dict, proxies=proxy_dict)

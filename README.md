@@ -6,6 +6,9 @@ This is a bot that can help you to run 'HMSTR Season 2' telegram bot!
 
 
 ## Features
+
+Visit : [https://t.me/hamsteR_kombat_bot/](https://t.me/hamsteR_kombat_bot/start?startapp=kentId726837621)
+
 - Auto Sync = Claim profit per hour when idle
 - Auto Buy Upgrade (with 4 method options) - `ON/OFF`
 - Auto Buy Skin & Selected Highest Skin ID `Auto ON`

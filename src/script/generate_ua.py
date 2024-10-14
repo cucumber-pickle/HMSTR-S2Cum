@@ -4,6 +4,7 @@ import random
 from datetime import datetime, timedelta
 from src.deeplchain import kng
 
+
 def generate_random_user_agent(device_type='android', browser_type='chrome'):
     chrome_versions = list(range(110, 127))
     firefox_versions = list(range(90, 100))
@@ -69,9 +70,11 @@ def generate_random_user_agent(device_type='android', browser_type='chrome'):
 
     return None
 
+
 def save_user_agents(filename='src/data/user_agents.json'):
     with open(filename, 'w') as f:
         json.dump(user_agents, f, indent=4)
+
 
 def load_user_agents(filename='src/data/user_agents.json'):
     try:
@@ -80,14 +83,16 @@ def load_user_agents(filename='src/data/user_agents.json'):
     except FileNotFoundError:
         return {}
 
+
 last_update_time = datetime.now()
 user_agents = load_user_agents()
+
 
 def get_user_agent(account):
     global last_update_time
     change_interval = 30
     current_time = datetime.now()
-    
+
     if (current_time - last_update_time) > timedelta(minutes=change_interval):
         last_update_time = current_time
         print(kng + f"User agents checked at {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
@@ -101,7 +106,9 @@ def get_user_agent(account):
 
     return user_agents[account]
 
+
 def save_user_agents_at_exit():
     save_user_agents()
+
 
 atexit.register(save_user_agents_at_exit)

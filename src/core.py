@@ -35,14 +35,15 @@ def load_setup_from_file(setup_file):
         setup = json.load(file)
     return setup
 
-def show_menu(auto_upgrade, tasks_on, promo_on):
+def show_menu(use_proxy, auto_upgrade, tasks_on, promo_on):
     clear()
     banner()
     menu = f"""
 {kng} Choose Setup :{reset}
-{kng}  1.{reset} Auto Buy Upgrade           : {get_status(auto_upgrade)}
-{kng}  2.{reset} Auto Complete Tasks        : {get_status(tasks_on)} 
-{kng}  3.{reset} Auto Redeem Promo          : {get_status(promo_on)} {kng}[ SOON ]
+{kng}  1.{reset} Use Proxy                  : {get_status(use_proxy)}
+{kng}  2.{reset} Auto Buy Upgrade           : {get_status(auto_upgrade)}
+{kng}  3.{reset} Auto Complete Tasks        : {get_status(tasks_on)} 
+{kng}  4.{reset} Auto Redeem Promo          : {get_status(promo_on)} {kng}[ SOON ]
 {mrh}    {pth} --------------------------------{reset}
 {kng}  8.{reset} {kng}Save Setup{reset}
 {kng}  9.{reset} {mrh}Reset Setup{reset}
@@ -74,8 +75,8 @@ def show_upgrade_menu():
     choice = input(" Enter your choice (1/2/3/4): ")
     return choice
 
-def run_bot(auto_upgrade, tasks_on, promo_on, _method):
-    gen = Generate(token=None, account=None)
+def run_bot(use_proxy, auto_upgrade, tasks_on, promo_on, _method):
+    gen = Generate()
     cek_task_dict = {}
     DELAY_EACH_ACCOUNT = config.get('DELAY_EACH_ACCOUNT', 0)
     LOOP_COUNTDOWN = config.get('LOOP_COUNTDOWN', 0)
@@ -87,19 +88,20 @@ def run_bot(auto_upgrade, tasks_on, promo_on, _method):
             init_data_list = load_tokens('data.txt')
 
             for idx, init_data in enumerate(init_data_list):
+
                 total = len(init_data_list)
                 proxy_dict = None
                 account = f"{idx + 1}/{total}"
 
-                if gen.use_proxy and gen.proxies:
+                if use_proxy and gen.proxies:
+                    if proxy_index >= len(gen.proxies):
+                        proxy_index = 0
                     proxy_dict = gen.proxies[proxy_index]
 
                 query_id = init_data 
 
                 if query_id:
-
                     token = get_token(init_data, account, proxies=proxy_dict)
-
                     if token:
                         ham = HamsterKombat(token, account)
                         try:
@@ -174,12 +176,14 @@ def main():
     if args.setup:
         setup_file = f'src/config/{args.setup}.json'
         setup_data = load_setup_from_file(setup_file)
+        use_proxy = setup_data.get('use_proxy', False)
         auto_upgrade = setup_data.get('auto_upgrade', False)
         tasks_on = setup_data.get('task_on', False)
         promo_on = setup_data.get('promo_on', False)
         _method = setup_data.get('_method', None)
-        run_bot(auto_upgrade, tasks_on, promo_on, _method)
+        run_bot(use_proxy, auto_upgrade, tasks_on, promo_on, _method)
     else:
+        use_proxy = True
         auto_upgrade = True
         tasks_on = True
         promo_on = False
@@ -187,20 +191,23 @@ def main():
 
         while True:
             try:
-                choice = show_menu(auto_upgrade, tasks_on, promo_on)
+                choice = show_menu(use_proxy, auto_upgrade, tasks_on, promo_on)
                 if choice == '1':
+                    use_proxy = not use_proxy
+                elif choice == '2':
                     auto_upgrade = not auto_upgrade
                     if auto_upgrade:
                         _method = show_upgrade_menu()
                         if _method not in ['1', '2', '3', '4']:
                             auto_upgrade = False
-                elif choice == '2':
+                elif choice == '3':
                     tasks_on = not tasks_on
                 elif choice == '789':
                     promo_on = not promo_on
                 elif choice == '8':
                     setup_name = input(" Enter setup name (without space): ")
                     setup_data = {
+                        'use_proxy': use_proxy,
                         'auto_upgrade': auto_upgrade,
                         '_method': _method,
                         'tasks_on': tasks_on,
@@ -208,7 +215,7 @@ def main():
                     }
                     save_setup(setup_name, setup_data)
                 elif choice == '0':
-                    run_bot(auto_upgrade, tasks_on, promo_on, _method)
+                    run_bot(use_proxy, auto_upgrade, tasks_on, promo_on, _method)
                 elif choice == '9':
                     break
                 else:
